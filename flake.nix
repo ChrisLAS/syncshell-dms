@@ -62,6 +62,7 @@
               {
                 nativeBuildInputs = [
                   pkgs.jq
+                  pkgs.nodejs
                   pkgs.ripgrep
                 ];
               }
@@ -72,6 +73,8 @@
                   echo "Forbidden Omarchy or mutation contract found" >&2
                   exit 1
                 fi
+                cd ${self}
+                node tests/model.test.js
                 test -f ${package}/share/dms-plugins/syncshell/plugin.json
                 touch "$out"
               '';
