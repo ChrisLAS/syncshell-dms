@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-08-30
+
+- Restrict shared DMS state to a sanitized UI projection.
+- Keep folder paths and Syncthing identifiers private to the daemon.
+- Remove host-specific validation details and add privacy regression coverage.
+- Add ignore rules for local secrets and build artifacts.
+
 ## 0.2.0 - 2026-08-30
 
 - Add indexed folder sizes, remaining bytes, completion progress, and activity.
