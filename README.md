@@ -74,7 +74,9 @@ dms ipc call syncshell refresh
 - The API key is never persisted by SyncShell.
 - The API key is never placed in process arguments or logs.
 - SyncShell has no service or folder mutation endpoints.
-- Folder paths are hidden from text status but can be opened from the panel.
+- Shared DMS state excludes folder paths, folder IDs, and Syncthing device IDs.
+- Folder paths remain private to the daemon and can be opened from the panel.
+- Active transfers expose only the displayed filename, not its relative path.
 - TLS settings are discovered from the local Syncthing configuration.
 
 The plugin runs with the authority of the desktop user. Anyone able to modify
