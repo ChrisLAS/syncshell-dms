@@ -43,6 +43,34 @@ if (model.formatBytes(rows[0].globalBytes) !== "1.0 GiB")
 if (model.folderState(rows[0]) !== "SYNCING")
   throw new Error("folder state failed")
 
+const publicRows = model.publicFolderRows({
+  localDeviceId: "LOCAL",
+  folders: [{
+    id: "private-id",
+    label: "Documents",
+    path: "/home/test/Documents",
+    devices: [{ deviceID: "LOCAL" }, { deviceID: "PRIVATE-REMOTE-ID" }]
+  }],
+  folderStatuses: {
+    "private-id": {
+      state: "error",
+      error: "/home/test/Documents/private-file failed",
+      globalFiles: 42
+    }
+  },
+  folderActivity: {
+    "private-id": "reports/private-file.pdf"
+  }
+}, "/home/test")
+if (publicRows.length !== 1 || publicRows[0].position !== 0)
+  throw new Error("public folder projection failed")
+if ("id" in publicRows[0] || "path" in publicRows[0] || "resolvedPath" in publicRows[0])
+  throw new Error("public folder projection exposed an identifier or path")
+if (JSON.stringify(publicRows).indexOf("PRIVATE-REMOTE-ID") !== -1
+    || JSON.stringify(publicRows).indexOf("/home/test") !== -1
+    || publicRows[0].activity !== "private-file.pdf")
+  throw new Error("public folder projection exposed private metadata")
+
 const rate = model.sampleRate(
   { at: "2026-08-30T08:00:00Z", inBytesTotal: 1000, outBytesTotal: 500 },
   { at: "2026-08-30T08:00:02Z", inBytesTotal: 5000, outBytesTotal: 2500 }
