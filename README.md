@@ -93,6 +93,10 @@ nix build
 See `AGENTS.md` for source ownership, safety rules, and the complete agent
 startup contract.
 
+## Releases
+
+See `CHANGELOG.md` for release notes and tested versions.
+
 ## License
 
 Code is MIT licensed. Adapted Syncthing status icons remain MPL-2.0. See

@@ -28,7 +28,7 @@
               runHook preInstall
               mkdir -p "$out/share/dms-plugins/syncshell"
               cp -R plugin.json SyncshellDaemon.qml SyncshellWidget.qml \
-                core models assets LICENSE THIRD_PARTY_NOTICES.md UPSTREAM.md \
+                core models assets CHANGELOG.md LICENSE THIRD_PARTY_NOTICES.md UPSTREAM.md \
                 "$out/share/dms-plugins/syncshell/"
               runHook postInstall
             '';
