@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-08-30
 
 - Add indexed folder sizes, remaining bytes, completion progress, and activity.
 - Add sampled aggregate download and upload rates.

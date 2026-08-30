@@ -2,6 +2,8 @@
 
 Read-only Syncthing health and file activity in the DankMaterialShell bar.
 
+![SyncShell dashboard in DankMaterialShell](https://i.postimg.cc/6Q3hk0Vb/syncthing-dm.png)
+
 SyncShell shows local folder status, connected device counts, synchronization
 activity, and links to folders and the Syncthing Web UI. It does not install,
 start, stop, or reconfigure Syncthing.
@@ -71,7 +73,7 @@ dms ipc call syncshell refresh
 
 - The API key is never persisted by SyncShell.
 - The API key is never placed in process arguments or logs.
-- Version 0.1.x has no service or folder mutation endpoints.
+- SyncShell has no service or folder mutation endpoints.
 - Folder paths are hidden from text status but can be opened from the panel.
 - TLS settings are discovered from the local Syncthing configuration.
 

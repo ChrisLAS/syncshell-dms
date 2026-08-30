@@ -21,7 +21,7 @@
         rec {
           syncshell-dms = pkgs.stdenvNoCC.mkDerivation {
             pname = "syncshell-dms";
-            version = "0.1.0";
+            version = "0.2.0";
             src = self;
             dontBuild = true;
             installPhase = ''
