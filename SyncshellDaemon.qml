@@ -29,7 +29,6 @@ PluginComponent {
     property bool eventPolling: false
     property var folderActivity: ({})
     property string localDeviceId: ""
-    property string activity: ""
     property string keyOutput: ""
 
     readonly property bool online: phase === "ready"
