@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add indexed folder sizes, remaining bytes, completion progress, and activity.
+- Add sampled aggregate download and upload rates.
+- Redesign the popout with a DMS-native summary, scrollable cards, and actions.
+
 ## 0.1.0 - 2026-08-30
 
 - Add a native DMS composite daemon and DankBar widget.

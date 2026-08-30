@@ -4,6 +4,7 @@ import Quickshell.Io
 import qs.Common
 import qs.Modules.Plugins
 import "core"
+import "models/PanelModel.js" as PanelModel
 
 PluginComponent {
     id: root
@@ -20,6 +21,13 @@ PluginComponent {
     property var folderStatuses: ({})
     property var devices: []
     property var connections: ({})
+    property real downloadBytesPerSec: 0
+    property real uploadBytesPerSec: 0
+    property var previousConnectionTotal: ({})
+    property int eventSince: 0
+    property bool eventsInitialized: false
+    property bool eventPolling: false
+    property var folderActivity: ({})
     property string localDeviceId: ""
     property string activity: ""
     property string keyOutput: ""
@@ -48,7 +56,10 @@ PluginComponent {
             deviceCount: devices.length,
             connectedDeviceCount: connectedDeviceCount,
             localDeviceId: localDeviceId,
-            activity: activity
+            activity: activity,
+            folderActivity: folderActivity,
+            downloadBytesPerSec: downloadBytesPerSec,
+            uploadBytesPerSec: uploadBytesPerSec
         }
     }
 
@@ -105,7 +116,7 @@ PluginComponent {
             root.localDeviceId = String((data || {}).myID || ""); finished()
         }, failed)
         request("getConnections", {}, function(data) {
-            root.connections = data || ({}); finished()
+            root.updateConnections(data || ({})); finished()
         }, failed)
         request("getDevices", {}, function(data) {
             root.devices = data instanceof Array ? data : []; finished()
@@ -115,6 +126,54 @@ PluginComponent {
             for (var i = 0; i < root.folders.length; i++) root.fetchFolder(root.folders[i].id)
             finished()
         }, failed)
+    }
+
+    function updateConnections(data) {
+        connections = data
+        var total = data && data.total ? data.total : ({})
+        var rate = PanelModel.sampleRate(previousConnectionTotal, total)
+        downloadBytesPerSec = rate.downloadBytesPerSec
+        uploadBytesPerSec = rate.uploadBytesPerSec
+        previousConnectionTotal = total
+    }
+
+    function sampleConnections() {
+        if (!apiKey || phase === "error") return
+        api.request("getConnections", {}, function(data) {
+            root.updateConnections(data || ({}))
+            root.publish()
+        }, function() {})
+    }
+
+    function pollEvents() {
+        if (!apiKey || eventPolling || phase === "error") return
+        eventPolling = true
+        api.request("getEvents", { query: { since: eventSince, limit: 100, timeout: 0 } }, function(data) {
+            root.eventPolling = false
+            var events = data instanceof Array ? data : []
+            if (!root.eventsInitialized) {
+                root.eventsInitialized = true
+                if (events.length) root.eventSince = Number(events[events.length - 1].id || 0)
+                return
+            }
+            var nextActivity = Object.assign({}, root.folderActivity)
+            var nextStatuses = Object.assign({}, root.folderStatuses)
+            for (var i = 0; i < events.length; i++) {
+                var event = events[i] || ({})
+                var payload = event.data || ({})
+                root.eventSince = Math.max(root.eventSince, Number(event.id || 0))
+                if (event.type === "FolderSummary" && payload.folder && payload.summary)
+                    nextStatuses[String(payload.folder)] = payload.summary
+                if (event.type === "ItemStarted" && payload.folder && payload.item)
+                    nextActivity[String(payload.folder)] = String(payload.item)
+                if (event.type === "ItemFinished" && payload.folder && payload.item
+                        && nextActivity[String(payload.folder)] === String(payload.item))
+                    delete nextActivity[String(payload.folder)]
+            }
+            root.folderStatuses = nextStatuses
+            root.folderActivity = nextActivity
+            root.publish()
+        }, function() { root.eventPolling = false })
     }
 
     function fetchFolder(folderId) {
@@ -158,6 +217,16 @@ PluginComponent {
         onTriggered: root.refresh()
     }
 
+    Timer {
+        interval: 2000
+        repeat: true
+        running: true
+        onTriggered: {
+            root.sampleConnections()
+            root.pollEvents()
+        }
+    }
+
     IpcHandler {
         target: "syncshell"
         function refresh(): void { root.refresh() }
@@ -170,6 +239,7 @@ PluginComponent {
 
     Component.onDestruction: {
         generation++
+        eventPolling = false
         apiKey = ""
         keyOutput = ""
     }
