@@ -1,0 +1,16 @@
+{
+  "id": "syncshell",
+  "name": "SyncShell",
+  "description": "Read-only Syncthing health and activity for DankMaterialShell.",
+  "version": "0.2.0",
+  "author": "Chris Fisher; based on work by IlyaZar",
+  "type": "composite",
+  "capabilities": ["daemon", "dankbar-widget", "network"],
+  "components": {
+    "daemon": "./SyncshellDaemon.qml",
+    "widget": "./SyncshellWidget.qml"
+  },
+  "requires_dms": ">=1.5.0",
+  "requires": ["syncthing", "xdg-open"],
+  "permissions": ["network", "process", "settings_read"]
+}
