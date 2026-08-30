@@ -51,13 +51,14 @@ PluginComponent {
         return {
             phase: phase,
             lastError: lastError,
-            folders: folders,
-            folderStatuses: folderStatuses,
+            folderRows: PanelModel.publicFolderRows({
+                folders: folders,
+                folderStatuses: folderStatuses,
+                localDeviceId: localDeviceId,
+                folderActivity: folderActivity
+            }, Quickshell.env("HOME")),
             deviceCount: devices.length,
             connectedDeviceCount: connectedDeviceCount,
-            localDeviceId: localDeviceId,
-            activity: activity,
-            folderActivity: folderActivity,
             downloadBytesPerSec: downloadBytesPerSec,
             uploadBytesPerSec: uploadBytesPerSec
         }
@@ -230,6 +231,16 @@ PluginComponent {
     IpcHandler {
         target: "syncshell"
         function refresh(): void { root.refresh() }
+        function openFolder(index: string): string {
+            var position = Number(index)
+            if (position !== Math.floor(position) || position < 0 || position >= root.folders.length)
+                return "Invalid folder"
+            var folder = root.folders[position] || ({})
+            var path = PanelModel.resolveFolderPath(folder.path, Quickshell.env("HOME"))
+            if (!path) return "Folder path unavailable"
+            Quickshell.execDetached(["xdg-open", path])
+            return "Opened folder"
+        }
         function status(): string {
             return "phase=" + root.phase + " folders=" + root.folders.length
                 + " devices=" + root.connectedDeviceCount + "/" + root.devices.length
