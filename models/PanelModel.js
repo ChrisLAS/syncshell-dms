@@ -62,6 +62,36 @@ function buildFolderRows(state, homePath) {
   return rows
 }
 
+function publicFolderRows(state, homePath) {
+  var rows = buildFolderRows(state, homePath)
+  var safeRows = []
+  for (var i = 0; i < rows.length; i++) {
+    var folder = rows[i]
+    var activityParts = String(folder.activity || "").split(/[\\/]/)
+    safeRows.push({
+      position: i,
+      label: folder.label,
+      problem: folder.problem,
+      syncing: folder.syncing,
+      scanning: folder.scanning,
+      paused: folder.paused,
+      state: folder.state,
+      error: folder.problem ? "Needs attention" : "",
+      needItems: folder.needItems,
+      needBytes: folder.needBytes,
+      globalBytes: folder.globalBytes,
+      localBytes: folder.localBytes,
+      inSyncBytes: folder.inSyncBytes,
+      globalFiles: folder.globalFiles,
+      globalDirectories: folder.globalDirectories,
+      sharedDeviceCount: folder.sharedDeviceCount,
+      activity: activityParts.length ? activityParts[activityParts.length - 1] : "",
+      progress: folder.progress
+    })
+  }
+  return safeRows
+}
+
 function total(rows, key) {
   var value = 0
   for (var i = 0; i < rows.length; i++) value += Number(rows[i][key] || 0)
