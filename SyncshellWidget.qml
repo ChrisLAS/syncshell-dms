@@ -10,7 +10,7 @@ PluginComponent {
 
     property var state: pluginService && pluginService.getGlobalVar
         ? pluginService.getGlobalVar(pluginId, "state", ({})) : ({})
-    property var folderRows: PanelModel.buildFolderRows(state, Quickshell.env("HOME"))
+    property var folderRows: state && state.folderRows ? state.folderRows : []
     readonly property real indexedBytes: PanelModel.total(folderRows, "globalBytes")
     readonly property real remainingBytes: PanelModel.total(folderRows, "needBytes")
     readonly property int activeFolders: {
@@ -227,8 +227,10 @@ PluginComponent {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: if (modelData.resolvedPath)
-                                        Quickshell.execDetached(["xdg-open", modelData.resolvedPath])
+                                    onClicked: Quickshell.execDetached([
+                                        "dms", "ipc", "call", "syncshell", "openFolder",
+                                        String(modelData.position)
+                                    ])
                                 }
                             }
                         }
