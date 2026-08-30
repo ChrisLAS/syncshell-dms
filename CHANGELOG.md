@@ -16,6 +16,6 @@
 - Preserve upstream SyncShell attribution and Syncthing icon licensing.
 
 Validated with DMS 1.5.3, Quickshell 0.3.0, Syncthing 2.1.3, and NixOS
-26.11. The unavailable state was tested without a Syncthing service on
-Nixvader. Live API discovery, 11 folders, device status, and popout rendering
-were tested against the system Syncthing service on Nixstation.
+26.11. The unavailable state was tested on a system without Syncthing. Live
+API discovery, folder and device status, and popout rendering were tested
+against a local system Syncthing service.
